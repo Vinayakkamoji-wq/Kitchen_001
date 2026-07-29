@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livoraj — Kitchen Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F2E9;
+    --paper-deep:#EFE7D8;
+    --ink:#2B2521;
+    --ink-soft:#5C5248;
+    --wood:#6B4530;
+    --wood-deep:#4A2F20;
+    --sage:#6E7A5C;
+    --brass:#B08A52;
+    --brass-light:#D9BD8C;
+    --line:rgba(43,37,33,0.16);
+    --card:#FFFDF8;
+    --shadow: 0 22px 50px rgba(43,26,10,0.14);
+    --font-display: "Fraunces", serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+    --ease: cubic-bezier(.22,.68,0,1);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; font-family:var(--font-body); color:var(--ink); background:var(--paper); overflow-x:hidden;}
+  ::selection{background:var(--brass-light);}
+  img{max-width:100%; display:block;}
+
+  /* ---------- reveal-on-scroll ---------- */
+  .reveal{opacity:0; transform:translateY(26px); transition:opacity .8s var(--ease), transform .8s var(--ease);}
+  .reveal.revealed{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1 !important; transform:none !important; transition:none !important;}
+  }
+
+  /* ---------- side progress ---------- */
+  .progress-rail{position:fixed; right:14px; top:50%; transform:translateY(-50%); width:3px; height:180px; background:rgba(43,37,33,0.12); border-radius:3px; z-index:60;}
+  .progress-fill{position:absolute; top:0; left:0; width:100%; height:0%; background:var(--brass); border-radius:3px; transition:height .1s linear;}
+  @media (max-width:640px){ .progress-rail{right:8px; height:120px;} }
+
+  section{position:relative; width:100%;}
+  .wrap{max-width:640px; margin:0 auto; padding:0 26px;}
+
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--wood); display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+  .eyebrow .dash{width:26px;height:1px;background:var(--wood); display:inline-block;}
+  h1,h2,h3{font-family:var(--font-display); margin:0; color:var(--ink); font-weight:600; letter-spacing:-0.01em;}
+  p{line-height:1.68; color:var(--ink-soft); margin:0; font-size:15px;}
+
+  /* ================= COVER ================= */
+  .cover{min-height:100svh; display:flex; align-items:flex-end; background:linear-gradient(175deg, var(--wood-deep) 0%, #3A2617 42%, var(--wood) 100%); overflow:hidden;}
+  .arch-art{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:.9;}
+  .arch-art svg{width:120%; height:120%; max-width:900px;}
+  .arch-ring{animation:breathe 7s ease-in-out infinite;}
+  .arch-ring.r2{animation-delay:.6s;}
+  .arch-ring.r3{animation-delay:1.2s;}
+  @keyframes breathe{ 0%,100%{opacity:.5; transform:scale(1);} 50%{opacity:.95; transform:scale(1.02);} }
+  .cover-content{position:relative; z-index:2; padding:0 26px 70px; color:#F7F2E9; width:100%;}
+  .cover .eyebrow{color:var(--brass-light);}
+  .cover .eyebrow .dash{background:var(--brass-light);}
+  .cover h1{font-size:clamp(32px,8vw,50px); color:#FBF6EC; max-width:14ch; line-height:1.08;}
+  .cover .sub{margin-top:18px; max-width:44ch; font-size:15.5px; color:rgba(251,246,236,0.82);}
+  .cover .meta{margin-top:34px; display:flex; flex-direction:column; gap:8px; font-family:var(--font-mono); font-size:11.5px; color:rgba(251,246,236,0.65); letter-spacing:.04em;}
+  .scroll-cue{position:absolute; bottom:22px; left:50%; transform:translateX(-50%); z-index:2; font-family:var(--font-mono); font-size:10.5px; color:rgba(251,246,236,0.55); letter-spacing:.12em; display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .scroll-cue .stem{width:1px; height:22px; background:rgba(251,246,236,0.4); overflow:hidden; position:relative;}
+  .scroll-cue .stem::after{content:''; position:absolute; top:-100%; left:0; width:100%; height:100%; background:var(--brass-light); animation:cue 1.8s ease-in-out infinite;}
+  @keyframes cue{ to{top:100%;} }
+
+  /* ================= WORKFLOW (scroll-driven) ================= */
+  .workflow-section{height:280vh;}
+  .workflow-sticky{position:sticky; top:0; height:100svh; display:flex; flex-direction:column; justify-content:center; padding:40px 26px; overflow:hidden;}
+  .wf-inner{max-width:640px; margin:0 auto; width:100%; display:grid; grid-template-columns:100px 1fr; gap:18px; align-items:center;}
+  .wf-svg-wrap{position:relative;}
+  .wf-svg-wrap svg{width:100%; height:auto; overflow:visible;}
+  .wf-path{fill:none; stroke:var(--brass); stroke-width:2; stroke-linecap:round; transition:stroke-dashoffset 1s var(--ease);}
+  .wf-waypoint{fill:var(--paper-deep); stroke:var(--wood); stroke-width:1.4;}
+  .wf-marker{fill:var(--brass); stroke:#fff; stroke-width:2;}
+  .wf-copy-stack{position:relative; min-height:190px;}
+  .wf-copy{position:absolute; inset:0; opacity:0; transform:translateY(10px); transition:opacity .55s var(--ease), transform .55s var(--ease); pointer-events:none;}
+  .wf-copy.active{opacity:1; transform:translateY(0); pointer-events:auto;}
+  .wf-copy .stop-tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--brass); display:block; margin-bottom:6px;}
+  .wf-copy h3{font-size:19px; margin-bottom:8px;}
+  .wf-copy p{font-size:13.6px;}
+  .wf-dots{display:flex; gap:8px; margin-top:16px;}
+  .wf-dot{width:6px; height:6px; border-radius:50%; background:var(--line); transition:all .3s ease;}
+  .wf-dot.active{background:var(--brass); width:18px; border-radius:3px;}
+  .wf-note{max-width:640px; margin:22px auto 0; padding:0 26px;}
+  .parallel-note{padding:14px 16px; border-radius:14px; background:rgba(110,122,92,0.12); border:1px solid rgba(110,122,92,0.35); font-size:12.6px; color:var(--ink-soft); display:flex; gap:10px; align-items:flex-start;}
+  .parallel-note .icon{color:var(--sage); font-family:var(--font-mono); flex-shrink:0;}
+  @media (max-width:520px){ .wf-inner{grid-template-columns:70px 1fr; gap:12px;} }
+
+  /* ================= ZONE SECTIONS ================= */
+  .zone{padding:90px 0 40px;}
+  .zone-head p{margin-top:10px; font-size:14px; max-width:44ch;}
+  .zone-head h2{font-size:clamp(24px,6vw,34px); margin-top:2px;}
+
+  .photo-wrap{position:relative; margin:28px 0 8px; border-radius:26px; overflow:hidden; box-shadow:var(--shadow); background:var(--paper-deep);}
+  .photo-wrap img{width:100%; height:auto; display:block; aspect-ratio: 16/10; object-fit: cover;}
+  .photo-vignette{position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at center, transparent 58%, var(--paper) 108%); opacity:.65;}
+
+  .hotspot{
+    position:absolute; width:26px; height:26px; transform:translate(-50%,-50%) scale(0);
+    border-radius:50%; background:rgba(43,37,33,0.55); border:1.5px solid rgba(255,255,255,0.85);
+    color:#fff; font-family:var(--font-mono); font-size:11px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5;
+    transition:background .18s ease, transform .18s var(--ease);
+  }
+  .photo-wrap.in-view .hotspot{animation:hs-in .5s var(--ease) forwards;}
+  @keyframes hs-in{ to{transform:translate(-50%,-50%) scale(1);} }
+  .hotspot::after{content:''; position:absolute; inset:-7px; border-radius:50%; border:1px solid rgba(255,255,255,0.5); animation:pulse 2.6s ease-out infinite;}
+  .hotspot:hover, .hotspot.active{background:var(--brass); transform:translate(-50%,-50%) scale(1.15);}
+  @keyframes pulse{ 0%{transform:scale(0.8); opacity:.9;} 80%{transform:scale(1.6); opacity:0;} 100%{opacity:0;} }
+
+  .hotcard{position:absolute; width:230px; max-width:64vw; background:var(--card); border-radius:14px; box-shadow:0 20px 45px rgba(20,14,8,0.35); padding:14px 16px; z-index:10; opacity:0; pointer-events:none; transform:translateY(8px) scale(.97); transition:opacity .16s var(--ease), transform .16s var(--ease);}
+  .hotcard.show{opacity:1; pointer-events:auto; transform:translateY(0) scale(1);}
+  .hotcard .tag{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--brass); margin-bottom:5px; display:block;}
+  .hotcard p{font-size:12.6px; font-style:italic; line-height:1.5; color:var(--ink);}
+
+  .feature-row{display:grid; grid-template-columns:38px 1fr; gap:14px; padding:22px 0;}
+  .feature-row-num{font-family:var(--font-mono); font-size:12px; color:var(--brass); padding-top:3px;}
+  .feature-row h3{font-size:16.5px; margin-bottom:6px;}
+  .feature-row p{font-size:13.8px;}
+  .row-divider{width:100%; height:14px; margin:0;}
+  .row-divider svg{width:100%; height:100%; display:block;}
+  .row-divider path{stroke:var(--wood); opacity:.28; stroke-width:1.3; fill:none;}
+
+  /* ================= FLOWING FEATURE SECTIONS (materials/lighting) ================= */
+  .flowing-head p{margin-top:10px; font-size:14px; max-width:46ch;}
+  .flowing-head h2{font-size:clamp(24px,6vw,34px);}
+
+  /* ================= CLOSING ================= */
+  .closing{background:linear-gradient(165deg, var(--wood-deep) 0%, #2E1D12 100%); padding:100px 0 90px; color:#F7F2E9;}
+  .closing .eyebrow{color:var(--brass-light);}
+  .closing .eyebrow .dash{background:var(--brass-light);}
+  .closing h2{font-size:clamp(28px,7vw,42px); color:#FBF6EC; max-width:15ch;}
+  .closing p{margin-top:14px; max-width:44ch; color:rgba(251,246,236,0.78);}
+  .closing-line{margin-top:34px; font-family:var(--font-display); font-style:italic; font-weight:500; font-size:clamp(19px,5vw,26px); color:var(--brass-light);}
+
+  .section-arch-divider{width:100%; height:44px; overflow:hidden;}
+  .section-arch-divider svg{width:100%; height:100%; display:block;}
+</style>
+</head>
+<body>
+
+<div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- ================= COVER ================= -->
+<section class="cover">
+  <div class="arch-art">
+    <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#D9BD8C" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#D9BD8C" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="200" cy="180" r="220" fill="url(#glow)"/>
+      <path class="arch-ring r1" d="M110,420 L110,220 A90,90 0 0 1 290,220 L290,420" fill="none" stroke="#D9BD8C" stroke-width="1.4" opacity="0.75"/>
+      <path class="arch-ring r2" d="M75,420 L75,190 A125,125 0 0 1 325,190 L325,420" fill="none" stroke="#B08A52" stroke-width="1" opacity="0.5"/>
+      <path class="arch-ring r3" d="M40,420 L40,160 A160,160 0 0 1 360,160 L360,420" fill="none" stroke="#B08A52" stroke-width="0.7" opacity="0.32"/>
+      <line x1="130" y1="420" x2="130" y2="240" stroke="#D9BD8C" stroke-width="0.6" opacity="0.4"/>
+      <line x1="200" y1="420" x2="200" y2="205" stroke="#D9BD8C" stroke-width="0.6" opacity="0.4"/>
+      <line x1="270" y1="420" x2="270" y2="240" stroke="#D9BD8C" stroke-width="0.6" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="cover-content">
+    <div class="eyebrow"><span class="dash"></span>KITCHEN WALKTHROUGH</div>
+    <h1>A kitchen built around how you actually move through it.</h1>
+    <p class="sub">Prepared for Livoraj — a walkthrough of your U-shaped kitchen, zone by zone, showing what every feature means for how you'll actually use it.</p>
+    <div class="meta">
+      <div>PREPARED FOR — LIVORAJ</div>
+      <div>LAYOUT — U-SHAPE, 3 WALLS</div>
+      <div>FINISH — WHITE &amp; WOOD, GLOSS ACRYLIC</div>
+    </div>
+  </div>
+  <div class="scroll-cue">SCROLL<div class="stem"></div></div>
+</section>
+
+<!-- ================= WORKFLOW ================= -->
+<section class="workflow-section" id="workflowSection">
+  <div class="workflow-sticky">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="dash"></span>HOW THIS KITCHEN WORKS</div>
+    </div>
+    <div class="wf-inner">
+      <div class="wf-svg-wrap">
+        <svg id="wfSvg" viewBox="0 0 140 320" xmlns="http://www.w3.org/2000/svg">
+          <path id="wfPath" class="wf-path" d="M40,20 C110,45 120,110 100,150 C82,186 40,230 40,290"/>
+          <circle class="wf-waypoint" cx="40" cy="20" r="5"/>
+          <circle class="wf-waypoint" cx="100" cy="150" r="5"/>
+          <circle class="wf-waypoint" cx="40" cy="290" r="5"/>
+          <circle id="wfMarker" class="wf-marker" cx="40" cy="20" r="7"/>
+        </svg>
+      </div>
+      <div class="wf-copy-stack">
+        <div class="wf-copy active" data-stop="0">
+          <span class="stop-tag">01 — Store &amp; Cut</span>
+          <h3>Every meal starts here.</h3>
+          <p>You open the fridge and pull out what today's recipe needs, setting it straight onto the counter beside it — still under the window, still in daylight. There's no walk yet, no carrying an armful of vegetables across the kitchen. Whatever needs chopping happens right where it was pulled from the fridge.</p>
+        </div>
+        <div class="wf-copy" data-stop="1">
+          <span class="stop-tag">02 — Wash</span>
+          <h3>A turn, not a walk.</h3>
+          <p>From here it's a few steps to the sink — just a turn, not a walk. What's been chopped gets rinsed, or last night's vessels get washed, all in the same corner you started in. The stone sink keeps it quiet, and the purifier tap means you never have to stop mid-task just to get a drink of water.</p>
+        </div>
+        <div class="wf-copy" data-stop="2">
+          <span class="stop-tag">03 — Cook</span>
+          <h3>The shortest stretch, on purpose.</h3>
+          <p>From the sink to the hob is the tightest corner in the whole layout — deliberately. Wet hands, a full pan, a hot pot: none of it travels far. And once you're at the hob, everything you'd reach for mid-recipe is already stationed right there, so cooking itself never sends you back across the kitchen.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="wf-dots" id="wfDots">
+        <div class="wf-dot active"></div><div class="wf-dot"></div><div class="wf-dot"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wf-note">
+  <div class="parallel-note reveal">
+    <span class="icon">＋</span>
+    <span>And because all three walls are wide and distinct rather than cramped into one tight run, two people can cook here at once — one washing at the sink while another chops at the storage-wall counter — without getting in each other's way.</span>
+  </div>
+</div>
+
+<div class="section-arch-divider"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><path d="M0,10 Q200,44 400,10" fill="none" stroke="#6B4530" stroke-width="1" opacity="0.25"/></svg></div>
+
+<!-- ================= ZONE 1 — SINK ================= -->
+<section class="zone">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="dash"></span>ZONE 01 — SINK &amp; ARCH WINDOW</div>
+    <div class="zone-head reveal">
+      <h2>The window wall — the visual heart of the kitchen.</h2>
+      <p>Tap the markers on the photo for a quick real-world moment. The list below goes deeper on each one.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="photo-wrap reveal" id="stage1">
+      <img src="images/sink.jpg" alt="Sink and prep wall with arched window"><div class="photo-vignette"></div>
+      <div class="hotspot" data-card="c1a" style="left:52%; top:66%;">1</div>
+      <div class="hotspot" data-card="c1b" style="left:50%; top:20%;">2</div>
+      <div class="hotspot" data-card="c1c" style="left:60%; top:66%;">3</div>
+      <div class="hotspot" data-card="c1d" style="left:63%; top:40%;">4</div>
+      <div class="hotspot" data-card="c1e" style="left:29%; top:80%;">5</div>
+      <div class="hotspot" data-card="c1f" style="left:78%; top:76%;">6</div>
+      <div class="hotspot" data-card="c1g" style="left:80%; top:60%;">7</div>
+
+      <div class="hotcard" id="c1a" style="left:36%; top:38%;"><span class="tag">Multipurpose sink</span><p>"Dinner's done, plates are washed and stacked — by the time you've put the last pot away, the first plate's already dry."</p></div>
+      <div class="hotcard" id="c1b" style="left:30%; top:4%;"><span class="tag">Arch window</span><p>"You're rinsing vegetables and the window's wide open, morning light on the counter — nothing blocking the view."</p></div>
+      <div class="hotcard" id="c1c" style="left:40%; top:38%;"><span class="tag">Purifier &amp; tap</span><p>"Thirsty mid-cooking? One tap right at the sink, and you've got clean water — no walk to the fridge."</p></div>
+      <div class="hotcard" id="c1d" style="left:44%; top:16%;"><span class="tag">Stone sink</span><p>"Late night, everyone's asleep, you're washing the last dishes — no clang, no one wakes up."</p></div>
+      <div class="hotcard" id="c1e" style="left:5%; top:50%;"><span class="tag">Hidden bin</span><p>"Peeling onions, you drop the skins straight into the wet side — the dry side's still empty for the morning."</p></div>
+      <div class="hotcard" id="c1f" style="left:52%; top:46%;"><span class="tag">Wicker basket</span><p>"Need three onions for the curry — pull the basket, you can already see which ones are good."</p></div>
+      <div class="hotcard" id="c1g" style="left:52%; top:34%;"><span class="tag">Blind corner</span><p>"That deep, awkward corner — here it swings out on its own, nothing gets pushed back and forgotten."</p></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="feature-row reveal">
+      <div class="feature-row-num">01</div>
+      <div><h3>Multipurpose sink</h3><p>The basin is shaped so water naturally runs off anything placed in it, rather than pooling. Stack a washed plate to one side and by the time you've moved to the next, the first is already dry — no wiping down the rack afterward.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">02</div>
+      <div><h3>Arch window, kept clear</h3><p>Most kitchens box a window like this in with cabinets for extra storage. Here that trade was made the other way — the window stays completely open, remaining the visual centerpiece rather than being chopped up by cabinet doors. Because it also opens, it doubles as ventilation while you work at the sink.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">03</div>
+      <div><h3>Purifier &amp; dedicated tap</h3><p>A water purifier sits in the cabinet below the sink, connected to its own separate tap. Drinking water is always exactly where you're already standing — no bottles to refill, no filter jug taking up fridge space.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">04</div>
+      <div><h3>Stone sink, not steel</h3><p>Because the sink is stone rather than steel, everyday use — rinsing a pot, running the tap — doesn't produce the sharp metallic clang steel sinks are known for. A quieter kitchen overall, which matters most if this space opens into your living or dining area.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">05</div>
+      <div><h3>Hidden bin, wet &amp; dry</h3><p>Open the cabinet door beneath the counter and the bin is right there, split into two. Wet waste and dry waste separate themselves the moment you throw something away, instead of needing to be sorted later — and there's no separate bin sitting out on the floor.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">06</div>
+      <div><h3>Wicker basket</h3><p>Onions, potatoes, and garlic need airflow to stay fresh — sealed away, they sweat and spoil faster. This ventilated basket lets air move through, sits low, and pulls out fully, so a glance tells you exactly what's left instead of digging through a dark cabinet.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">07</div>
+      <div><h3>Blind corner, solved</h3><p>Every U-shaped kitchen has one corner that's naturally hard to reach — deep, dark, usually wasted. Here it pulls outward on its own, bringing everything stored in it into full view instead of leaving it pushed back and forgotten.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-arch-divider"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><path d="M0,10 Q200,44 400,10" fill="none" stroke="#6B4530" stroke-width="1" opacity="0.25"/></svg></div>
+
+<!-- ================= ZONE 2 — COOK ================= -->
+<section class="zone">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="dash"></span>ZONE 02 — COOK WALL</div>
+    <div class="zone-head reveal">
+      <h2>Everything mid-cook is within arm's reach.</h2>
+      <p>One clean move from the sink — nothing here pulls you away from a pan on the flame.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="photo-wrap reveal" id="stage2">
+      <img src="images/hob.jpg" alt="Cooking wall with hob, hood and storage">
+      <div class="photo-vignette"></div>
+      <div class="hotspot" data-card="c2f" style="left:20%; top:34%;">1</div>
+      <div class="hotspot" data-card="c2d" style="left:75%; top:79%;">2</div>
+      <div class="hotspot" data-card="c2e" style="left:31%; top:46%;">3</div>
+      <div class="hotspot" data-card="c2c" style="left:57%; top:79%;">4</div>
+      <div class="hotspot" data-card="c2a" style="left:57%; top:15%;">5</div>
+      <div class="hotspot" data-card="c2b" style="left:59%; top:38%;">6</div>
+
+      <div class="hotcard" id="c2f" style="left:6%; top:8%;"><span class="tag">Wall cabinets beside hood</span><p>"Tempering's about to burn — you reach sideways, not across the kitchen, and the mustard seeds are already in your hand."</p></div>
+      <div class="hotcard" id="c2d" style="left:38%; top:52%;"><span class="tag">Bottle pull-out</span><p>"Dal's on the flame and you need the vinegar — slide it open, grab it, shut — without turning your back on the pot."</p></div>
+      <div class="hotcard" id="c2e" style="left:8%; top:52%;"><span class="tag">Ladder pull-out</span><p>"Need the good steel dabba from the top shelf — pull the ladder, step up, done. No dragging a stool across the kitchen."</p></div>
+      <div class="hotcard" id="c2c" style="left:20%; top:52%;"><span class="tag">Cutlery &amp; thali drawer</span><p>"Dinner's ready, you pull the drawer, and every thali and spoon is exactly where you left it."</p></div>
+      <div class="hotcard" id="c2a" style="left:30%; top:2%;"><span class="tag">Loft storage</span><p>"Diwali's coming and you need the big brass thali set — it's been sitting in the loft since last year, out of the way till now."</p></div>
+      <div class="hotcard" id="c2b" style="left:20%; top:26%;"><span class="tag">Hob &amp; chimney</span><p>"You're frying something that really smokes — thirty seconds later, the kitchen doesn't smell like it at all."</p></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="feature-row reveal">
+      <div class="feature-row-num">01</div>
+      <div><h3>Wall cabinets beside the hood</h3><p>These two cabinets sit at exactly the height and distance your hand naturally reaches while standing at the hob. The idea is to keep your daily-use spices, oils, and condiments here — not pantry stock — so you're never turning away from a dish on the flame to find what you need.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">02</div>
+      <div><h3>Bottle pull-out</h3><p>A slim, dedicated pull-out beside the hob holds oil, vinegar, and the masalas you reach for constantly while cooking. Slide it open, take what you need, slide it shut — all without leaning across a lit flame.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">03</div>
+      <div><h3>Ladder pull-out in the tall unit</h3><p>Top shelves in a tall unit are usually a "get the stool" problem. Here, a built-in step slides outward from the unit itself, turning the top shelf into something just as easy to reach as the bottom one.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">04</div>
+      <div><h3>Cutlery &amp; thali drawer</h3><p>Rather than a shelf, this is a soft-close pull-out drawer positioned directly below the hob, divided into sections for spoons, forks, and thalis — sturdy enough to hold a full stack of steel thalis without sagging, and nothing at the back gets lost since it glides out completely.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">05</div>
+      <div><h3>Loft storage</h3><p>Above the cabinets, there's a dedicated space for things you only need occasionally — festival cookware, extra dabbas, appliances that come out a few times a year — keeping your everyday shelves uncluttered.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">06</div>
+      <div><h3>Hob &amp; chimney</h3><p>The hob sits directly beneath the chimney, so smoke and steam are pulled away right where they're created rather than drifting through the rest of the house — no waving smoke off, no smell lingering an hour later.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-arch-divider"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><path d="M0,10 Q200,44 400,10" fill="none" stroke="#6B4530" stroke-width="1" opacity="0.25"/></svg></div>
+
+<!-- ================= ZONE 3 — STORAGE & CUTTING ================= -->
+<section class="zone">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="dash"></span>ZONE 03 — STORAGE &amp; CUTTING</div>
+    <div class="zone-head reveal">
+      <h2>Groceries land, get put away, and get chopped — one wall.</h2>
+      <p>Closest to the entry door, with its own cutting counter under daylight.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="photo-wrap reveal" id="stage3">
+      <img src="images/fridge.jpg" alt="Cooking wall with hob, hood and storage">
+      <div class="photo-vignette"></div>
+      <div class="hotspot" data-card="c3a" style="left:20%; top:40%;">1</div>
+      <div class="hotspot" data-card="c3b" style="left:39%; top:82%;">2</div>
+      <div class="hotspot" data-card="c3c" style="left:70%; top:55%;">3</div>
+      <div class="hotspot" data-card="c3d" style="left:56%; top:82%;">4</div>
+
+      <div class="hotcard" id="c3a" style="left:24%; top:16%;"><span class="tag">Roller shutter garage</span><p>"Morning toast — slide the shutter up, toaster's already plugged in, breakfast's out the door faster."</p></div>
+      <div class="hotcard" id="c3b" style="left:16%; top:44%;"><span class="tag">Cutting station</span><p>"Chopping vegetables for lunch, daylight straight on the board — no lamp, no shadow from your own hand."</p></div>
+      <div class="hotcard" id="c3c" style="left:44%; top:20%;"><span class="tag">Fridge beside cutting</span><p>"Recipe needs one more ingredient mid-chop — one step to the fridge and you're back at the board."</p></div>
+      <div class="hotcard" id="c3d" style="left:30%; top:44%;"><span class="tag">Soft-close drawers</span><p>"Looking for the pressure cooker at the back — pull it fully open, it's right there, not buried."</p></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="feature-row reveal">
+      <div class="feature-row-num">01</div>
+      <div><h3>Roller shutter appliance garage</h3><p>One sliding front hides every countertop appliance — toaster, mixer, sandwich maker — behind a single shutter. Slide it up to use what's plugged in behind it, slide it back down when done, and the counter never looks cluttered.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">02</div>
+      <div><h3>Cutting station under the window</h3><p>A second chopping counter sits directly under natural light, separate from the main prep area at the sink — no chopping in your own shadow here, no reaching for a switch during the day.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">03</div>
+      <div><h3>Fridge beside the cutting station</h3><p>Placing the fridge immediately next to this counter means pulling out an ingredient mid-recipe is one step, not a walk across the kitchen — chop, reach, grab, back to chopping.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">04</div>
+      <div><h3>Four soft-close drawers</h3><p>Four full-extension drawers run along this base. Because they glide out completely rather than opening partway, whatever's at the back is exactly as easy to reach as what's in front.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-arch-divider"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><path d="M0,10 Q200,44 400,10" fill="none" stroke="#6B4530" stroke-width="1" opacity="0.25"/></svg></div>
+
+<!-- ================= MATERIALS ================= -->
+<section class="zone">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="dash"></span>LOOK &amp; FEEL</div>
+    <div class="flowing-head reveal">
+      <h2>White, wood, and one black line running through it all.</h2>
+      <p>The same choices repeat across all three walls — which is exactly what makes it read as one kitchen, not three separate zones.</p>
+    </div>
+
+    <div class="feature-row reveal" style="margin-top:22px;">
+      <div class="feature-row-num">01</div>
+      <div><h3>Glossy acrylic shutters</h3><p>Every base cabinet shutter is glossy acrylic, chosen to stay low-maintenance. No grain or texture to trap grease or fingerprints — a wipe with a damp cloth is usually enough, especially useful right beside the hob.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">02</div>
+      <div><h3>Black G-profile handles</h3><p>The same black handle repeats on every wall — sink cabinets, cook wall drawers, tall storage units. A small, quiet detail, but the one visual thread that ties three separate walls into a single, cohesive kitchen.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">03</div>
+      <div><h3>White with wood accents</h3><p>The base palette stays white throughout, with wood tones reserved mainly for the tall storage columns — a subtle bit of visual logic that quietly reinforces how the kitchen is organized.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">04</div>
+      <div><h3>Soft-close, without exception</h3><p>Every shutter and every drawer across all three walls closes on its own, gently, every time — not just on the showcase pieces. Nothing in daily use here ever slams.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-arch-divider"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><path d="M0,10 Q200,44 400,10" fill="none" stroke="#6B4530" stroke-width="1" opacity="0.25"/></svg></div>
+
+<!-- ================= LIGHTING ================= -->
+<section class="zone">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="dash"></span>LIGHTING</div>
+    <div class="flowing-head reveal">
+      <h2>Light in layers, not one flat overhead beam.</h2>
+      <p>Three distinct light sources, each doing a different job — mood, room, and task.</p>
+    </div>
+
+    <div class="feature-row reveal" style="margin-top:22px;">
+      <div class="feature-row-num">01</div>
+      <div><h3>Profile light (ceiling perimeter)</h3><p>A light strip traces the edge of the ceiling around the kitchen — ambient, mood lighting that softens the room in the evening rather than lighting any single task.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">02</div>
+      <div><h3>Surface lights (4 points)</h3><p>Four surface-mounted lights handle the kitchen's actual day-to-day illumination, working alongside the profile light rather than replacing it — general daily lighting, tone still to be decided.</p></div>
+    </div>
+    <div class="row-divider"><svg viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0,7 Q200,14 400,7"/></svg></div>
+
+    <div class="feature-row reveal">
+      <div class="feature-row-num">03</div>
+      <div><h3>Under-cabinet task lighting</h3><p>A separate strip runs beneath the wall cabinets above the cook and cutting counters, lighting the counter surface directly — so your own hands and head never cast a shadow over what you're chopping or plating.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CLOSING ================= -->
+<section class="closing">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="dash"></span>THE IDEA, IN ONE LINE</div>
+    <h2 class="reveal">A kitchen that stays out of your way.</h2>
+    <p class="reveal">Every feature on these three walls exists to remove one small friction from your day — one less walk, one less reach, one less thing that slams, sticks, or spoils.</p>
+    <div class="closing-line reveal">"Nothing in this kitchen slams. Ever."</div>
+  </div>
+</section>
+
+<script>
+  // ---------- reveal on scroll ----------
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealIO = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('revealed'); revealIO.unobserve(e.target); }
+    });
+  }, {threshold:0.15});
+  revealEls.forEach(el=>revealIO.observe(el));
+
+  // ---------- photo in-view (for hotspot stagger) ----------
+  const photoIO = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in-view'); photoIO.unobserve(e.target); }
+    });
+  }, {threshold:0.3});
+  document.querySelectorAll('.photo-wrap').forEach(p=>photoIO.observe(p));
+
+  // ---------- side progress bar ----------
+  const progressFill = document.getElementById('progressFill');
+  function updateProgress(){
+    const h = document.documentElement;
+    const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    progressFill.style.height = Math.min(100, Math.max(0, scrolled*100)) + '%';
+  }
+  document.addEventListener('scroll', ()=> requestAnimationFrame(updateProgress), {passive:true});
+  updateProgress();
+
+  // ---------- hotspot interactions ----------
+  document.querySelectorAll('.photo-wrap').forEach(stage=>{
+    const hotspots = stage.querySelectorAll('.hotspot');
+    const cards = stage.querySelectorAll('.hotcard');
+    function closeAll(){ hotspots.forEach(h=>h.classList.remove('active')); cards.forEach(c=>c.classList.remove('show')); }
+    hotspots.forEach(h=>{
+      h.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const card = stage.querySelector('#'+h.dataset.card);
+        const isOpen = card.classList.contains('show');
+        closeAll();
+        if(!isOpen){ h.classList.add('active'); card.classList.add('show'); }
+      });
+    });
+    stage.addEventListener('click', closeAll);
+  });
+
+  // ---------- scroll-driven workflow path ----------
+  (function(){
+    const path = document.getElementById('wfPath');
+    const marker = document.getElementById('wfMarker');
+    const copies = document.querySelectorAll('.wf-copy');
+    const dots = document.querySelectorAll('.wf-dot');
+    const total = path.getTotalLength();
+    path.style.strokeDasharray = total;
+    path.style.strokeDashoffset = total;
+
+    const fractions = [0.06, 0.5, 0.94];
+    let currentStop = -1;
+    let raf = null;
+
+    function animateMarkerTo(targetPt, duration){
+      const start = {x: parseFloat(marker.getAttribute('cx')), y: parseFloat(marker.getAttribute('cy'))};
+      const t0 = performance.now();
+      if(raf) cancelAnimationFrame(raf);
+      function step(now){
+        const t = Math.min(1, (now - t0) / duration);
+        const eased = 1 - Math.pow(1-t, 3);
+        marker.setAttribute('cx', start.x + (targetPt.x - start.x) * eased);
+        marker.setAttribute('cy', start.y + (targetPt.y - start.y) * eased);
+        if(t < 1) raf = requestAnimationFrame(step);
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    function setStop(i){
+      if(i === currentStop) return;
+      currentStop = i;
+      path.style.strokeDashoffset = total * (1 - (i+1)/3);
+      const pt = path.getPointAtLength(total * fractions[i]);
+      animateMarkerTo(pt, 700);
+      copies.forEach(c=> c.classList.toggle('active', Number(c.dataset.stop) === i));
+      dots.forEach((d,j)=> d.classList.toggle('active', j === i));
+    }
+
+    const section = document.getElementById('workflowSection');
+    function computeStopFromScroll(){
+      const rect = section.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      if(scrollable <= 0) return;
+      const passed = Math.min(Math.max(-rect.top, 0), scrollable);
+      const progress = passed / scrollable;
+      let idx = Math.floor(progress * 3);
+      idx = Math.min(2, Math.max(0, idx));
+      setStop(idx);
+    }
+    document.addEventListener('scroll', ()=> requestAnimationFrame(computeStopFromScroll), {passive:true});
+    computeStopFromScroll();
+  })();
+</script>
+</body>
+</html>
